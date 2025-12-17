@@ -1,0 +1,14 @@
+{
+  "name": "edificio-status",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler pages dev public --d1 DB=edificio-status-db",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3"
+  }
+}

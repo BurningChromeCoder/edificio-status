@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Estado del Edificio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Animación de agua con olas realistas */
+/* Animación de agua con olas realistas */
+        @keyframes waterWave {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+            100% { transform: translateX(-100%) translateY(0); }
+        }
+        @keyframes waterBubble {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+        }
+        @keyframes waterShine {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        .water-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, 
+                rgba(100, 200, 255, 0.15) 0%, 
+                rgba(50, 150, 255, 0.25) 50%, 
+                rgba(30, 100, 200, 0.35) 100%);
+        }
+        .water-wave {
+            position: absolute;
+            bottom: -50%;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0.4) 0%,
+                rgba(200, 240, 255, 0.3) 30%,
+                rgba(100, 200, 255, 0.2) 60%,
+                transparent 100%);
+            border-radius: 43%;
+            animation: waterWave 6s linear infinite;
+        }
+        .water-wave:nth-child(2) {
+            animation-duration: 8s;
+            animation-delay: -2s;
+            opacity: 0.6;
+            border-radius: 47%;
+        }
+        .water-wave:nth-child(3) {
+            animation-duration: 10s;
+            animation-delay: -4s;
+            opacity: 0.4;
+            border-radius: 45%;
+        }
+        .water-bubble {
+            position: absolute;
+            bottom: 10%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200,240,255,0.6));
+            box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
+            animation: waterBubble 4s ease-in infinite;
+        }
+        .water-bubble:nth-child(4) { left: 15%; animation-delay: 0s; }
+        .water-bubble:nth-child(5) { left: 40%; animation-delay: 1.5s; width: 6px; height: 6px; }
+        .water-bubble:nth-child(6) { left: 65%; animation-delay: 3s; width: 10px; height: 10px; }
+        .water-bubble:nth-child(7) { left: 85%; animation-delay: 0.8s; width: 7px; height: 7px; }
+        .water-shine {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, 
+                transparent 0%, 
+                rgba(255,255,255,0.3) 30%, 
+                rgba(255,255,255,0.1) 50%, 
+                transparent 100%);
+            animation: waterShine 3s ease-in-out infinite;
+        }
+
+        /* Animación eléctrica mejorada */
+        @keyframes electricFlow {
+            0% { transform: translateY(-100%) scaleY(0); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateY(0%) scaleY(1); opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100%) scaleY(0); opacity: 0; }
+        }
+        @keyframes electricGlow {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
+        }
+        .electric-bolt {
+            position: absolute;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #fff 20%, #ffff00 50%, #fff 80%, transparent);
+            box-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #ffff00;
+            animation: electricFlow 1s infinite;
+            filter: blur(1px);
+        }
+        .electric-bolt-1 { left: 20%; animation-delay: 0s; }
+        .electric-bolt-2 { left: 50%; animation-delay: 0.3s; }
+        .electric-bolt-3 { left: 80%; animation-delay: 0.6s; }
+        .electric-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255,255,100,0.3), transparent 70%);
+            animation: electricGlow 2s infinite;
+        }
+
+        /* Animación de ascensor */
+        @keyframes elevatorMove {
+            0% { transform: translateY(150%); }
+            15% { transform: translateY(150%); }
+            35% { transform: translateY(0%); }
+            50% { transform: translateY(0%); }
+            70% { transform: translateY(-150%); }
+            85% { transform: translateY(-150%); }
+            100% { transform: translateY(150%); }
+        }
+        @keyframes doorOpen {
+            0%, 30%, 60%, 100% { transform: scaleX(1); }
+            40%, 50% { transform: scaleX(0); }
+        }
+        @keyframes elevatorLight {
+            0%, 30%, 60%, 100% { opacity: 0.3; }
+            35%, 55% { opacity: 1; }
+        }
+        .elevator-shaft {
+            position: absolute;
+            width: 80px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, rgba(255,255,255,0.05), rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-left: 2px solid rgba(255,255,255,0.2);
+            border-right: 2px solid rgba(255,255,255,0.2);
+        }
+        .elevator-cabin {
+            position: absolute;
+            width: 70px;
+            height: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            border: 3px solid rgba(255,255,255,0.5);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.1);
+            animation: elevatorMove 8s ease-in-out infinite;
+        }
+        .elevator-door {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(200,200,200,0.8), rgba(150,150,150,0.6));
+            transform-origin: center;
+            animation: doorOpen 8s ease-in-out infinite;
+        }
+        .elevator-door-left { left: 0; }
+        .elevator-door-right { right: 0; transform: scaleX(-1); }
+        .elevator-light {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffff00, #ff8800);
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffff00;
+            animation: elevatorLight 8s ease-in-out infinite;
+        }
+        .elevator-floor-indicator {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.7);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const PowerIcon = (props) => (
+            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v10"></path>
+                <path d="M8.5 4.5a9 9 0 1 0 7 0"></path>
+            </svg>
+        );
+        
+        const DropletIcon = (props) => (
+            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
+        );
+        
+        const ArrowUpDownIcon = (props) => (
+            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m21 16-4 4-4-4"></path>
+                <path d="M17 20V4"></path>
+                <path d="m3 8 4-4 4 4"></path>
+                <path d="M7 4v16"></path>
+            </svg>
+        );
+        
+        const SettingsIcon = (props) => (
+            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6"></path>
+                <path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24"></path>
+                <path d="M1 12h6m6 0h6"></path>
+                <path d="m4.93 19.07 4.24-4.24m5.66-5.66 4.24-4.24"></path>
+            </svg>
+        );
+        
+        const LogOutIcon = (props) => (
+            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" x2="9" y1="12" y2="12"></line>
+            </svg>
+        );
+
+        const API_BASE_URL = 'https://estado-edificio.pages.dev';
+
+        const App = () => {
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [showLogin, setShowLogin] = useState(false);
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [loginError, setLoginError] = useState('');
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [services, setServices] = useState({});
+
+            const fetchServices = async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                    const response = await fetch(`${API_BASE_URL}/status`);
+                    if (!response.ok) throw new Error('Error al cargar');
+                    const data = await response.json();
+                    const servicesObj = data.services.reduce((acc, s) => {
+                        acc[s.id] = { status: s.status, name: s.name };
+                        return acc;
+                    }, {});
+                    setServices(servicesObj);
+                } catch (err) {
+                    setError('Error de conexión: ' + err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleLogin = async () => {
+                setLoginError('');
+                await new Promise(r => setTimeout(r, 500));
+                if (username === 'admin' && password === 'admin') {
+                    localStorage.setItem('authToken', 'demo-token');
+                    setIsAdmin(true);
+                    setShowLogin(false);
+                    setPassword('');
+                    setUsername('');
+                } else {
+                    setLoginError('Credenciales incorrectas');
+                }
+            };
+
+            const handleLogout = () => {
+                localStorage.removeItem('authToken');
+                setIsAdmin(false);
+            };
+
+            const toggleStatus = (id) => {
+                if (!isAdmin) return;
+                const curr = services[id]?.status;
+                const newStatus = curr === 'ok' ? 'warning' : curr === 'warning' ? 'error' : 'ok';
+                setServices(prev => ({
+                    ...prev,
+                    [id]: { ...prev[id], status: newStatus }
+                }));
+            };
+
+            useEffect(() => {
+                fetchServices();
+                if (localStorage.getItem('authToken')) setIsAdmin(true);
+            }, []);
+
+            const getColor = (s) => s === 'ok' ? 'from-emerald-500 to-green-600' : s === 'warning' ? 'from-amber-500 to-orange-600' : 'from-red-500 to-rose-600';
+            const getText = (s) => s === 'ok' ? 'Operativo' : s === 'warning' ? 'Mantenimiento' : 'Fuera de Servicio';
+
+            const ServiceCard = ({ icon: Icon, service, id, waves, elec, elevator }) => (
+                <div onClick={() => toggleStatus(id)} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${getColor(service.status)} p-6 shadow-lg transition hover:scale-105 ${isAdmin ? 'cursor-pointer' : ''}`}>
+                    <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-4">
+                            <Icon className="w-10 h-10 text-white" />
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/30 text-white">{getText(service.status)}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-1">{service.name}</h3>
+                        <p className="text-white/80 text-sm">{service.status === 'ok' ? 'Funcionando' : 'Consultar admin'}</p>
+                    </div>
+                    {waves && service.status === 'ok' && (
+                        <div className="water-container">
+                            <div className="water-wave"></div>
+                            <div className="water-wave"></div>
+                            <div className="water-wave"></div>
+                            <div className="water-bubble"></div>
+                            <div className="water-bubble"></div>
+                            <div className="water-bubble"></div>
+                        </div>
+                    )}
+                    {elec && service.status === 'ok' && (
+                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                            <div className="electric-glow"></div>
+                            <div className="electric-bolt electric-bolt-1"></div>
+                            <div className="electric-bolt electric-bolt-2"></div>
+                            <div className="electric-bolt electric-bolt-3"></div>
+                        </div>
+                    )}
+                    {elevator && service.status === 'ok' && (
+                        <div className="absolute inset-0 pointer-events-none">
+                            <div className="elevator-shaft">
+                                <div className="elevator-floor-indicator">↑↓</div>
+                                <div className="elevator-cabin">
+                                    <div className="elevator-light"></div>
+                                    <div className="elevator-door elevator-door-left"></div>
+                                    <div className="elevator-door elevator-door-right"></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+
+            if (loading) return (
+                <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+                    <div className="text-white text-xl">Cargando...</div>
+                </div>
+            );
+
+            if (error) return (
+                <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+                    <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-6 text-red-400 text-center">
+                        <p className="text-xl font-bold mb-2">Error</p>
+                        <p>{error}</p>
+                        <button onClick={fetchServices} className="mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl">Reintentar</button>
+                    </div>
+                </div>
+            );
+
+            if (showLogin) return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+                    <div className="w-full max-w-md bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 p-8">
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <SettingsIcon className="w-8 h-8 text-white" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">Panel Admin</h2>
+                            <p className="text-slate-400 text-sm">admin / admin</p>
+                        </div>
+                        <div className="space-y-4">
+                            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Usuario" className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleLogin()} placeholder="Contraseña" className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            {loginError && <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-3 text-red-400 text-sm">{loginError}</div>}
+                            <button onClick={handleLogin} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 rounded-xl hover:from-blue-600 hover:to-cyan-600">Iniciar Sesión</button>
+                            <button onClick={() => setShowLogin(false)} className="w-full bg-slate-700/50 text-slate-300 font-medium py-3 rounded-xl hover:bg-slate-700">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                    <div className="max-w-6xl mx-auto px-4 py-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Estado del Edificio</h1>
+                                <p className="text-slate-400">Monitoreo en tiempo real</p>
+                            </div>
+                            <div className="flex gap-2">
+                                {isAdmin ? (
+                                    <>
+                                        <div className="hidden md:flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-xl text-sm font-medium">
+                                            <SettingsIcon className="w-4 h-4" /> Admin
+                                        </div>
+                                        <button onClick={handleLogout} className="flex items-center gap-2 bg-slate-700/50 hover:bg-slate-700 text-white px-4 py-2 rounded-xl">
+                                            <LogOutIcon className="w-4 h-4" /> <span className="hidden md:inline">Salir</span>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button onClick={() => setShowLogin(true)} className="flex items-center gap-2 bg-slate-700/50 hover:bg-slate-700 text-white px-4 py-2 rounded-xl">
+                                        <SettingsIcon className="w-4 h-4" /> <span className="hidden md:inline">Admin</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            {services.electricity && <ServiceCard icon={PowerIcon} service={services.electricity} id="electricity" elec />}
+                            {services.water && <ServiceCard icon={DropletIcon} service={services.water} id="water" waves />}
+                        </div>
+                        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <ArrowUpDownIcon className="w-6 h-6" /> Ascensores
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {services.elevator1 && <ServiceCard icon={ArrowUpDownIcon} service={services.elevator1} id="elevator1" elevator />}
+                            {services.elevator2 && <ServiceCard icon={ArrowUpDownIcon} service={services.elevator2} id="elevator2" elevator />}
+                            {services.elevator3 && <ServiceCard icon={ArrowUpDownIcon} service={services.elevator3} id="elevator3" elevator />}
+                        </div>
+                        {isAdmin && (
+                            <div className="mt-8 bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 text-center">
+                                <p className="text-blue-400 text-sm">Haz clic en las tarjetas para cambiar el estado</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>

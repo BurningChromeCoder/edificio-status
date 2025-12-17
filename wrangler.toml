@@ -1,0 +1,9 @@
+
+name = "estado-edificio"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "edificio-status-db"
+database_id = "38aba16e-1da8-4822-97bf-5a02e911b01d"
