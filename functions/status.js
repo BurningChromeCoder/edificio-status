@@ -7,33 +7,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+// functions/status.js
 export async function onRequestGet(context) {
   const { env } = context;
   
   try {
-    console.log('GET /status');
-    
+    // AGREGAMOS 'message' A LA CONSULTA SQL
     const { results } = await env.DB.prepare(
-      'SELECT id, name, status, updated_at FROM services ORDER BY id'
+      'SELECT id, name, status, message, updated_at FROM services ORDER BY id'
     ).all();
-
-    console.log('Services found:', results.length);
 
     return new Response(JSON.stringify({ services: results }), {
       headers: { 
-        ...corsHeaders, 
+        'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
       status: 200
     });
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
 

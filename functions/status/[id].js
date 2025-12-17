@@ -16,6 +16,7 @@ export async function onRequestPut(context) {
     
     const authHeader = request.headers.get('Authorization');
 
+    // Verificación básica de autorización
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ 
         error: 'No autorizado'
@@ -25,7 +26,8 @@ export async function onRequestPut(context) {
       });
     }
 
-    const { status } = await request.json();
+    // Leemos el status Y el mensaje del cuerpo de la petición
+    const { status, message } = await request.json();
 
     if (!['ok', 'warning', 'error'].includes(status)) {
       return new Response(JSON.stringify({ 
@@ -36,10 +38,13 @@ export async function onRequestPut(context) {
       });
     }
 
+    // Actualizamos la base de datos con ambos campos
+    // Usamos message || '' para asegurarnos de que no se guarde "null" o "undefined"
     await env.DB.prepare(
-      'UPDATE services SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(status, serviceId).run();
+      'UPDATE services SET status = ?, message = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+    ).bind(status, message || '', serviceId).run();
 
+    // Recuperamos el servicio actualizado para confirmar
     const updated = await env.DB.prepare(
       'SELECT * FROM services WHERE id = ?'
     ).bind(serviceId).first();
